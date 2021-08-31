@@ -5,11 +5,11 @@
       <p class="mt-4 text-gray-600 text-center leading-6">Our Sales team can help you find the right solution. Fill out the form and we’ll get in touch shortly.</p>
    </header>
     <Loader v-if="$apollo.loading" />
-    <form id="freeForm" class="mt-12 space-y-6" v-else @submit.prevent="onSubmit">
-      <Alert v-if="message !== '' " :message="message" />
+    <form id="freeForm" class="mt-12 space-y-4 md:space-y-6" v-else @submit.prevent="onSubmit">
+      <Alert v-if="alert !== null " :data="alert" @removeAlert="removeAlert" />
       <template v-for="(rows, i) in getFormInputs" >
         <div v-if="rows.fields.length > 1" class="flex flex-col md:flex-row space-x-0 md:space-x-4" :key="i">
-          <div class="w-full md:w-1/2 mb-6 md:mb-0" v-for="(inputs, j) in rows.fields" :key="j">
+          <div class="w-full md:w-1/2 mb-3 md:mb-0" v-for="(inputs, j) in rows.fields" :key="j">
             <component :is="'f-'+inputs.type" :text.sync="formData[inputs.handle]" :data="inputs"/>
           </div>
         </div>
@@ -34,7 +34,7 @@ export default {
   data(){
     return{
       loading: false,
-      message: "",
+      alert: null,
       errors: {},
       formData: {}
     }
@@ -67,14 +67,27 @@ export default {
         })
 
         const response = await rawResponse.json()
-        if(response.status === 200){
-          this.message = "Form successfully submitted. Our sales team will contact you soon"
+        if(response.status === 201){
+          this.alert = {
+            message: "Form successfully submitted. Our sales team will contact you soon",
+            type: "success"
+          }
         }
         this.loading = false
       }catch(err){
-        console.log(err);
         this.loading = false
+        this.alert = {
+            message: "Something went wrong! Please try again",
+            type: "error"
+          }
       }
+    },
+
+    /**
+     * Gets called when the user clicks on the close alert icon
+     */
+    removeAlert(){
+      this.alert = null
     }
   }
 }
