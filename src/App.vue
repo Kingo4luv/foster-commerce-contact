@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ContactForm from './components/views/Contact.vue'
+import ContactForm from './views/Contact.vue'
 
 
 export default {

@@ -21,7 +21,7 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
-  uri: 'https://happy-lager.fostercommerce.com/api',
+  uri: `${process.env.VUE_APP_BASE_URL}api`,
 })
 
 // Cache implementation

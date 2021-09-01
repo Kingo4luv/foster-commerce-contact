@@ -8,25 +8,21 @@
     <form id="freeForm" class="mt-12 space-y-4 md:space-y-6" v-else @submit.prevent="onSubmit">
       <Alert v-if="alert !== null " :data="alert" @removeAlert="removeAlert" />
       <template v-for="(rows, i) in getFormInputs" >
-        <div v-if="rows.fields.length > 1" class="flex flex-col md:flex-row space-x-0 md:space-x-4" :key="i">
-          <div class="w-full md:w-1/2 mb-3 md:mb-0" v-for="(inputs, j) in rows.fields" :key="j">
-            <component :is="'f-'+inputs.type" :text.sync="formData[inputs.handle]" :data="inputs"/>
+        <div  :class="[rows.fields.length > 1 ? 'flex flex-col md:flex-row space-x-0 md:space-x-4':'w-full']" :key="i">
+          <div :class="[rows.fields.length > 1 ? 'w-full md:w-1/2 mb-3 md:mb-0':'w-full']" v-for="(inputs, j) in rows.fields" :key="j">
+            <component :is="'f-'+inputs.type" :loading="loading" :text.sync="formData[inputs.handle]" :data="inputs"/>
           </div>
         </div>
-        <template v-else>
-          <div class="w-full" :key="i">
-            <component :is="'f-'+rows.fields[0].type" :loading="loading" :text.sync="formData[rows.fields[0].handle]" :data="rows.fields[0]" />
-          </div>
-        </template>
       </template>
     </form>
   </div>
 </template>
 
 <script>
-import Loader from '../FLoader.vue'
-import Alert from '../FAlert.vue'
-import FREEFORM from '../../query/get-freeform.js'
+import Loader from '../components/FLoader.vue'
+import Alert from '../components/FAlert.vue'
+import FREEFORM from '../query/get-freeform.js'
+import {submitForm} from '../actions/api.js'
 export default {
   components:{
     Loader, Alert
@@ -57,30 +53,19 @@ export default {
     async onSubmit(){
       this.loading = true
       const payload = {...this.formData, formID: this.freeform.form.id, formHash: this.freeform.form.hash }
-      try{
-        const rawResponse = await fetch(`${process.env.VUE_APP_BASE_URL}actions/freeform/api/form`, {
-        method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        })
-
-        const response = await rawResponse.json()
-        if(response.status === 201){
-          this.alert = {
-            message: "Form successfully submitted. Our sales team will contact you soon",
-            type: "success"
-          }
-        }
-        this.loading = false
-      }catch(err){
-        this.loading = false
+      const response = await submitForm(payload);
+      if(response.status === true){
         this.alert = {
-            message: "Something went wrong! Please try again",
+              message: response.message,
+              type: "success"
+          }
+      }else{
+        this.alert = {
+            message: response.message,
             type: "error"
           }
       }
+      this.loading = false
     },
 
     /**

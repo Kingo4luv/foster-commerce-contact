@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-fetch(`https://happy-lager.fostercommerce.com/api`, {
+fetch(`${process.env.VUE_APP_BASE_URL}api`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
