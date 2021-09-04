@@ -11,9 +11,18 @@ import FSelect from '@/components/forms/FSelect'
 import FTextarea from '@/components/forms/FTextarea'
 import FBtn from '@/components/forms/FBtn'
 import FEmail from '@/components/forms/FEmail'
+import { ValidationObserver, ValidationProvider, extend, localize } from 'vee-validate';
+import en from 'vee-validate/dist/locale/en.json';
+import * as rules from 'vee-validate/dist/rules';
 
 Vue.use(VueApollo)
 
+// install rules and localization
+Object.keys(rules).forEach(rule => {
+  extend(rule, rules[rule]);
+});
+
+localize('en', en);
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData
@@ -41,6 +50,8 @@ const apolloProvider = new VueApollo({
 
 Vue.config.productionTip = false
 
+Vue.component('ValidationObserver', ValidationObserver);
+Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('FText', FText)
 Vue.component('FSelect', FSelect)
 Vue.component('FTextarea', FTextarea)

@@ -5,16 +5,18 @@
       <p class="mt-4 text-gray-600 text-center leading-6">Our Sales team can help you find the right solution. Fill out the form and we’ll get in touch shortly.</p>
    </header>
     <Loader v-if="$apollo.loading" />
-    <form id="freeForm" class="mt-12 space-y-4 md:space-y-6" v-else @submit.prevent="onSubmit">
+    <ValidationObserver v-else ref="contactForm">
+    <form id="freeForm" class="mt-12 space-y-4 md:space-y-6"  @submit.prevent="onSubmit">
       <Alert v-if="alert !== null " :data="alert" @removeAlert="removeAlert" />
       <template v-for="(rows, i) in getFormInputs" >
         <div  :class="[rows.fields.length > 1 ? 'flex flex-col md:flex-row space-x-0 md:space-x-4':'w-full']" :key="i">
           <div :class="[rows.fields.length > 1 ? 'w-full md:w-1/2 mb-3 md:mb-0':'w-full']" v-for="(inputs, j) in rows.fields" :key="j">
-            <component :is="'f-'+inputs.type" :loading="loading" :text.sync="formData[inputs.handle]" :data="inputs"/>
+            <component :is="'f-'+inputs.type" :v-model="formData[inputs.handle]" :loading="loading" :text.sync="formData[inputs.handle]" :data="inputs"/>
           </div>
         </div>
       </template>
     </form>
+    </ValidationObserver>
   </div>
 </template>
 
@@ -25,7 +27,7 @@ import FREEFORM from '../query/get-freeform.js'
 import {submitForm} from '../actions/api.js'
 export default {
   components:{
-    Loader, Alert
+    Loader, Alert,
   },
   data(){
     return{
@@ -51,6 +53,8 @@ export default {
      * Gets called when the user submits the contact form
      */
     async onSubmit(){
+      const validationIsSucessfull = await this.$refs.contactForm.validate();
+      if(!validationIsSucessfull) return
       this.loading = true
       const payload = {...this.formData, formID: this.freeform.form.id, formHash: this.freeform.form.hash }
       const response = await submitForm(payload);
@@ -66,6 +70,7 @@ export default {
           }
       }
       this.loading = false
+
     },
 
     /**
