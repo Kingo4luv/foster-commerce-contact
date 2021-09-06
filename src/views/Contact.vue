@@ -11,7 +11,7 @@
       <template v-for="(rows, i) in getFormInputs" >
         <div  :class="[rows.fields.length > 1 ? 'flex flex-col md:flex-row space-x-0 md:space-x-4':'w-full']" :key="i">
           <div :class="[rows.fields.length > 1 ? 'w-full md:w-1/2 mb-3 md:mb-0':'w-full']" v-for="(inputs, j) in rows.fields" :key="j">
-            <component :is="'f-'+inputs.type" :v-model="formData[inputs.handle]" :loading="loading" :text.sync="formData[inputs.handle]" :data="inputs"/>
+            <component :is="'f-'+inputs.type"  :loading="loading" :text.sync="formData[inputs.handle]" :data="inputs"/>
           </div>
         </div>
       </template>
@@ -52,7 +52,7 @@ export default {
     /**
      * Gets called when the user submits the contact form
      */
-    async onSubmit(){
+    async onSubmit(event){
       const validationIsSucessfull = await this.$refs.contactForm.validate();
       if(!validationIsSucessfull) return
       this.loading = true
@@ -63,6 +63,7 @@ export default {
               message: response.message,
               type: "success"
           }
+          event.target.reset();
       }else{
         this.alert = {
             message: response.message,
@@ -78,7 +79,7 @@ export default {
      */
     removeAlert(){
       this.alert = null
-    }
+    },
   }
 }
 </script>

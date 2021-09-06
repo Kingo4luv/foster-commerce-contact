@@ -1,7 +1,7 @@
 <template>
     <div class="w-full">
         <ValidationProvider rules="required"  :name="data.label" v-slot="{ errors }">
-            <label class="block uppercase text-gray-700 text-xs font-bold mb-2" :for="data.handle">
+            <label class="form-label" :for="data.handle">
             {{data.label}} {{data.required === true ? '*':''}} 
             </label>
             <div class="relative">
