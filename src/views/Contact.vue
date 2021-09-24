@@ -56,7 +56,7 @@ export default {
       const validationIsSucessfull = await this.$refs.contactForm.validate();
       if(!validationIsSucessfull) return
       this.loading = true
-      const payload = {...this.formData, formID: this.freeform.form.id, authorId: 1, formHash: this.freeform.form.hash }
+      const payload = {...this.formData, formID: this.freeform.form.id, formHash: this.freeform.form.hash }
       const response = await submitForm(payload);
       if(response.status === true){
         this.alert = {
